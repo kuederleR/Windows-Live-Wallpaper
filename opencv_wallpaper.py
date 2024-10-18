@@ -3,7 +3,8 @@ import numpy as np
 import os
 from pynput import keyboard, mouse
 import time
-import threading
+import pyautogui
+
 # Get the path to the video file
 script_path = os.path.dirname(os.path.abspath(__file__))
 video_path = os.path.join(script_path, "wallpaper.mp4")
@@ -26,8 +27,8 @@ def kill_video():
     # print("Killing Video.")
     try:
         video_playing = False
-        cap.release()
-        cv2.destroyAllWindows()
+        # cap.release()
+        # cv2.destroyAllWindows()
     except:
         pass
     
@@ -37,19 +38,29 @@ def check_activity():
     global last_activity_time
     global cap
     while True:
-        if time.time() - last_activity_time > 20 and not video_playing:
+        if time.time() - last_activity_time > 5 and not video_playing:
             video_playing = True
             # print("Playing video")
             # Create a named window
             cv2.namedWindow("Video", cv2.WINDOW_NORMAL)
+            cv2.setWindowTitle("Video", "Demo Video")
             # Set the window to full screen
+            # Change the cursor to grab
+            # Move the cursor to the center of the screen
+            
+            cv2.setWindowProperty("Video", cv2.WND_PROP_TOPMOST, cv2.WINDOW_FULLSCREEN)
             cv2.setWindowProperty("Video", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-            cv2.setMouseCallback("Video", lambda *args: None)
+            pyautogui.moveTo(0, 0, duration=0.5)
+            # Set the title of the window
+            # cv2.setWindowProperty("Video", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+            # cv2.setMouseCallback("Video", lambda *args: None)
             # Hide the cursor in the window
             # cv2.setWindowProperty("Video", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN | cv2.WINDOW_GUI_NORMAL)
             video_playing = True
             # Open the video file
             cap = cv2.VideoCapture(video_path)
+            
             while cap.isOpened() and video_playing:
             # Read a frame from the video
                 ret, frame = cap.read()
@@ -65,6 +76,7 @@ def check_activity():
 
             cap.release()
             cv2.destroyAllWindows()
+
         time.sleep(1)
 
 video_playing = False
